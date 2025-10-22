@@ -1,51 +1,133 @@
-import { DeployButton } from "@/components/deploy-button";
-import { EnvVarWarning } from "@/components/env-var-warning";
-import { AuthButton } from "@/components/auth-button";
-import { Hero } from "@/components/hero";
-import { ThemeSwitcher } from "@/components/theme-switcher";
-import { ConnectSupabaseSteps } from "@/components/tutorial/connect-supabase-steps";
-import { SignUpUserSteps } from "@/components/tutorial/sign-up-user-steps";
-import { hasEnvVars } from "@/lib/utils";
-import Link from "next/link";
+"use client";
+import { useState, useEffect } from "react";
+import { createClient } from "@/lib/supabase/client";
+import LessonsTable from "@/components/LessonsTable";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import type { Lesson } from "@/lib/types/lesson";
 
-export default function Home() {
+export default function HomePage() {
+  const [lessons, setLessons] = useState< null | Lesson[]>(null);
+  const [outline, setOutline] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  // Load initial lessons
+  useEffect(() => {
+    const loadLessons = async () => {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from("lessons")
+        .select("id, title, outline, status, created_at")
+        .order("created_at", { ascending: false });
+      setLessons(data || []);
+    };
+    loadLessons();
+  }, []);
+
+  useEffect(() => {
+    const supabase = createClient();
+    const channel = supabase
+      .channel("public:lessons")
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "lessons",
+          filter: "status=eq.*"
+        },
+        (payload) => {
+          console.log("Lesson status updated:", payload.new);
+          setLessons((prev: Lesson[] | null) => {
+            const existing = prev?.find((l: Lesson) => l.id === payload.new.id);
+            if (existing) {
+              return prev?.map((l: Lesson) =>
+                l.id === payload.new.id ? payload.new as Lesson : l
+              ) || [];
+            }
+            return [payload.new as Lesson, ...(prev || [])];
+          });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const handleGenerateLesson = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!outline.trim()) {
+      setError("Please enter a lesson outline");
+      return;
+    }
+
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const response = await fetch("/api/lessons", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ outline: outline.trim() }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to create lesson");
+      }
+
+      const data = await response.json();
+      setLessons((prev) => [data as Lesson, ...(prev || [])]);
+      console.log("Lesson created:", data);
+      
+      // Clear the form
+      setOutline("");
+    } catch (error) {
+      console.error("Error creating lesson:", error);
+      setError(error instanceof Error ? error.message : "An error occurred while creating the lesson");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <main className="min-h-screen flex flex-col items-center">
-      <div className="flex-1 w-full flex flex-col gap-20 items-center">
-        <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-          <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
-            <div className="flex gap-5 items-center font-semibold">
-              <Link href={"/"}>Next.js Supabase Starter</Link>
-              <div className="flex items-center gap-2">
-                <DeployButton />
-              </div>
-            </div>
-            {!hasEnvVars ? <EnvVarWarning /> : <AuthButton />}
-          </div>
-        </nav>
-        <div className="flex-1 flex flex-col gap-20 max-w-5xl p-5">
-          <Hero />
-          <main className="flex-1 flex flex-col gap-6 px-4">
-            <h2 className="font-medium text-xl mb-4">Next steps</h2>
-            {hasEnvVars ? <SignUpUserSteps /> : <ConnectSupabaseSteps />}
-          </main>
-        </div>
+    <div className="container mx-auto p-4">
+      <h1 className="text-xl font-bold mb-4">Generate Lessons</h1>
 
-        <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-16">
-          <p>
-            Powered by{" "}
-            <a
-              href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-              target="_blank"
-              className="font-bold hover:underline"
-              rel="noreferrer"
-            >
-              Supabase
-            </a>
-          </p>
-          <ThemeSwitcher />
-        </footer>
-      </div>
-    </main>
+      {/* Form for new lesson outline */}
+      <form onSubmit={handleGenerateLesson} className="mb-6">
+        <div className="mb-4">
+          <Textarea
+            name="outline"
+            value={outline}
+            onChange={(e) => setOutline(e.target.value)}
+            minLength={20}
+            placeholder="Enter your lesson outline here..."
+            className="min-h-[120px] resize-vertical"
+            disabled={isLoading}
+          />
+          {error && (
+            <p className="text-red-600 text-sm mt-2">{error}</p>
+          )}
+        </div>
+        <div className="flex justify-center">
+        <Button
+          type="submit"
+          disabled={!outline.trim() || isLoading}
+          variant={!outline.trim() || isLoading ? "secondary" : "default"}
+        >
+          Generate
+        </Button>
+        </div>
+      </form>
+
+      {/* Lessons table */}
+      {lessons ? <LessonsTable lessons={lessons} /> : <p>Loading...</p>}
+    </div>
   );
 }
