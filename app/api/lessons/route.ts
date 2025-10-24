@@ -26,6 +26,25 @@ export async function POST(request: NextRequest) {
       .select()
       .single();
 
+    // Call the generate lesson function
+    if (data) {
+      try {
+        const functionUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/generate-lesson`;
+        fetch(functionUrl, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ lesson_id: data.id }),
+        });
+        console.log('Lesson generation triggered for:', data.id);
+      } catch (functionError) {
+        console.error('Error calling generate lesson function:', functionError);
+        // Don't fail the request if function call fails
+      }
+    }
+
     if (error) {
       console.error('Error creating lesson:', error);
       return NextResponse.json(
