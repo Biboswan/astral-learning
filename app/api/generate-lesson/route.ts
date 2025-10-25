@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { wrapAISDK } from "langsmith/experimental/vercel";
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { createOpenAI } from '@ai-sdk/openai';
-import { generateText, ModelMessage } from 'ai';
+import { ModelMessage } from 'ai';
+import * as ai from 'ai';
 import { validateAndTranspile } from '@/lib/validateAndTranspile';
 
 const updateGeneratedLesson = async (lesson_id: string, ts_code: string, js_code: string) => {
@@ -75,10 +77,12 @@ export async function POST(request: NextRequest) {
 
     Your task: given a lesson outline, generate the lesson variable declaration.`
 
-    const MAX_ATTEMPTS = 1;
+    const MAX_ATTEMPTS = 5;
     let attempts = 0;
     let generatedJsCode: string | undefined = undefined;
     let generatedTsCode: string | undefined = undefined;
+    const { generateText } = wrapAISDK(ai);
+
     const prompt = [{
       role: "system",
       content: systemPrompt
