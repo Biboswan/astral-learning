@@ -52,12 +52,20 @@ export async function POST(request: NextRequest) {
     3. Include these properties:
     - title: string
     - blocks: array of GeneratedLessonBlock objects
-    4. GeneratedLessonBlock can be of kind:
+    4. GeneratedLessonBlock can be of any of the following kinds:
     - "explanation": { heading?: string, body: string, svgDiagram?: string }
     - "quiz": { description?: string, questions: [{ question: string, options: string[], answer: number, explanation?: string }] }
     - "code": { language: "ts" | "js" | "python", code: string, output?: string }
     - "image": { alt: string, url: string }
-    5. Follow these strict rules:
+    5. Content Guidelines:
+    - Generate 6-8 blocks total (not 4 of each kind)
+    - Use explanation blocks for concepts and theory
+    - Use code blocks ONLY when demonstrating actual code examples
+    - Use quiz blocks for testing understanding
+    - Use image blocks sparingly, only when visual aids are truly helpful
+    - Avoid unnecessary code blocks - only include when teaching programming concepts
+    - Make content relevant and focused on the specific lesson outline
+    6. Follow these strict rules:
     - Start with "const lesson: GeneratedLessonContent = "
     - End with ";"
     - NO Markdown or fenced code blocks

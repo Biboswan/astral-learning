@@ -35,7 +35,6 @@ export default function HomePage() {
           event: "UPDATE",
           schema: "public",
           table: "lessons",
-          filter: "status=eq.*"
         },
         (payload) => {
           console.log("Lesson status updated:", payload.new);
