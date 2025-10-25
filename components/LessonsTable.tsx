@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 
 export default function LessonsTable({ lessons }: { lessons: Lesson[] }) {
@@ -46,14 +47,20 @@ export default function LessonsTable({ lessons }: { lessons: Lesson[] }) {
                     )}
                   </TableCell>
                   <TableCell>
-                    {lesson.status === "generating" ? (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 animate-pulse">
+                    {lesson.status === "generating" && (
+                      <Badge variant="generating" className="animate-pulse">
                         Generating...
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                      </Badge>
+                    )}
+                    {lesson.status === "failed" && (
+                      <Badge variant="failed">
+                        Failed
+                      </Badge>
+                    )}
+                    {lesson.status === "generated" && (
+                      <Badge variant="generated">
                         Generated
-                      </span>
+                      </Badge>
                     )}
                   </TableCell>
                   <TableCell className="text-sm text-gray-500">

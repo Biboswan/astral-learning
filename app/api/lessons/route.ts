@@ -26,17 +26,15 @@ export async function POST(request: NextRequest) {
       .select()
       .single();
 
-    // Call the generate lesson function
+    // Call the generate lesson API route
     if (data) {
       try {
-        const functionUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/generate-lesson`;
-        fetch(functionUrl, {
+        fetch(`${request.nextUrl.origin}/api/generate-lesson`, {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY}`,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ lesson_id: data.id }),
+          body: JSON.stringify({ lesson_id: data.id, outline: outline }),
         });
         console.log('Lesson generation triggered for:', data.id);
       } catch (functionError) {
