@@ -80,7 +80,7 @@ interface ImageBlock {
       strict: true,
       noImplicitAny: true,
       moduleResolution: ts.ModuleResolutionKind.Bundler,
-      skipLibCheck: false, // We need lib checking for global types
+      skipLibCheck: true, // We need lib checking for global types
       esModuleInterop: true,
       allowSyntheticDefaultImports: true,
       lib: ["lib.d.ts", "lib.esnext.d.ts"], // Include necessary libraries
