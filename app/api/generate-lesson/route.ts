@@ -32,6 +32,7 @@ const updateFailedLesson = async (lesson_id: string) => {
 
 export async function POST(request: NextRequest) {
   try {
+    console.log("Generating lesson...");
     const body = await request.json();
     
     const { lesson_id, outline } = body;
