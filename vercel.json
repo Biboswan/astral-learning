@@ -1,6 +1,6 @@
 {
     "functions": {
-      "supabase/functions/generate-lesson/index.ts": {
+      "api/generate-lesson": {
         "includeFiles": "node_modules/typescript/lib/**"
       }
     }
