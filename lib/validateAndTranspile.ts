@@ -83,7 +83,7 @@ interface ImageBlock {
       skipLibCheck: true, // We need lib checking for global types
       esModuleInterop: true,
       allowSyntheticDefaultImports: true,
-      lib: ["lib.d.ts", "lib.esnext.d.ts"], // Include necessary libraries
+      lib: ["lib.d.ts", "lib.es5.d.ts", "lib.esnext.d.ts"], // Include necessary libraries
     };
 
     // Create source files for type checking
