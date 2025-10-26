@@ -1,0 +1,7 @@
+{
+    "functions": {
+      "supabase/functions/generate-lesson/index.ts": {
+        "includeFiles": "node_modules/typescript/lib/**"
+      }
+    }
+}
