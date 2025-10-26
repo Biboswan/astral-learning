@@ -79,11 +79,11 @@ interface ImageBlock {
       module: ts.ModuleKind.ESNext,
       strict: true,
       noImplicitAny: true,
-      moduleResolution: ts.ModuleResolutionKind.NodeNext,
+      moduleResolution: ts.ModuleResolutionKind.Bundler,
       skipLibCheck: true, // We need lib checking for global types
       esModuleInterop: true,
       allowSyntheticDefaultImports: true,
-      lib: ["esnext", "dom"], // Include necessary libraries
+      lib: ["lib.d.ts", "lib.esnext.d.ts"], // Include necessary libraries
     };
 
     // Create source files for type checking
