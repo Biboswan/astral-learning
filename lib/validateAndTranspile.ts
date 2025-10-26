@@ -79,7 +79,7 @@ interface ImageBlock {
       module: ts.ModuleKind.ESNext,
       strict: true,
       noImplicitAny: true,
-      moduleResolution: ts.ModuleResolutionKind.Bundler,
+      moduleResolution: ts.ModuleResolutionKind.NodeNext,
       skipLibCheck: true, // We need lib checking for global types
       esModuleInterop: true,
       allowSyntheticDefaultImports: true,
