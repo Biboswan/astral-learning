@@ -90,7 +90,6 @@ export async function POST(request: NextRequest) {
       role: "user",
       content: `Lesson outline: "${outline}"`
     }];
- let ts_code: string | undefined = undefined, js_code: string | undefined = undefined;
 
     while (attempts < MAX_ATTEMPTS) {
         attempts++;

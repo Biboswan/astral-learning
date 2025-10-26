@@ -22,7 +22,6 @@ export default function InteractiveQuiz({ description, questions }: InteractiveQ
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<number[]>(new Array(questions.length).fill(-1));
   const [showResults, setShowResults] = useState(false);
-  const [quizCompleted, setQuizCompleted] = useState(false);
 
   const currentQuestion = questions[currentQuestionIndex];
   const isLastQuestion = currentQuestionIndex === questions.length - 1;
@@ -37,7 +36,6 @@ export default function InteractiveQuiz({ description, questions }: InteractiveQ
   const handleNext = () => {
     if (isLastQuestion) {
       setShowResults(true);
-      setQuizCompleted(true);
     } else {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     }
@@ -53,7 +51,6 @@ export default function InteractiveQuiz({ description, questions }: InteractiveQ
     setCurrentQuestionIndex(0);
     setSelectedAnswers(new Array(questions.length).fill(-1));
     setShowResults(false);
-    setQuizCompleted(false);
   };
 
   const calculateScore = () => {
@@ -78,7 +75,7 @@ export default function InteractiveQuiz({ description, questions }: InteractiveQ
       <Card className="w-full">
         <CardHeader>
           <CardTitle className="text-xl font-semibold">Quiz Results</CardTitle>
-          <CardDescription>Here's how you did on the quiz!</CardDescription>
+          <CardDescription>Here&apos;s how you did on the quiz!</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Score Display */}

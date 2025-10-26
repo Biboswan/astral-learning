@@ -1,15 +1,12 @@
 import * as ts from "typescript";
-import * as fs from "fs";
 import * as path from "path";
-import type { GeneratedLessonContent } from "@/lib/types/generatedLessonContent";
 
 /**
  * Validate and transpile AI-generated TypeScript lesson using TypeScript compiler API
  * @param tsCode AI-generated TypeScript code string
- * @param _typeReference Optional type reference to prevent tree-shaking
  * @returns { isValid: boolean, jsCode?: string, errors?: string[] }
  */
-export async function validateAndTranspile(tsCode: string, _typeReference?: GeneratedLessonContent) {
+export async function validateAndTranspile(tsCode: string) {
   // Validate input first
   if (!tsCode || typeof tsCode !== 'string') {
     return { isValid: false, errors: ['Invalid TypeScript code provided'] };
@@ -18,7 +15,7 @@ export async function validateAndTranspile(tsCode: string, _typeReference?: Gene
   // Check for invalid UTF-8 characters
   try {
     Buffer.from(tsCode, 'utf8').toString('utf8');
-  } catch (encodingError) {
+  } catch {
     return { isValid: false, errors: ['Invalid UTF-8 encoding in TypeScript code'] };
   }
 
@@ -75,11 +72,7 @@ interface ImageBlock {
 
     // Combine type definitions with generated code
     const fullCode = typeDefinitions + '\n' + tsCode;
-/**
- * "dom",
-      "dom.iterable",
-      "esnext"
- */
+
     // Create a TypeScript program for full type checking
     const compilerOptions: ts.CompilerOptions = {
       target: ts.ScriptTarget.ES2017,
@@ -105,7 +98,7 @@ interface ImageBlock {
     // Create host and override for in-memory file (delegate to original for libs/other files)
     const host = ts.createCompilerHost(compilerOptions);
     const customHostConfig = {
-      getSourceFile: (name: string, languageVersion: ts.ScriptTarget | ts.CreateSourceFileOptions, onError: any) => {
+      getSourceFile: (name: string, languageVersion: ts.ScriptTarget | ts.CreateSourceFileOptions, onError?: (message: string) => void) => {
         if (path.resolve(name) === path.resolve(fileName)) {
           return sourceFile;
         }
@@ -155,10 +148,11 @@ interface ImageBlock {
     }
 
     return { isValid: true, jsCode: transpileResult.outputText };
-    
-  } catch (err: any) {
+
+  } catch (err: unknown) {
     // TypeScript compiler throws on syntax or type errors
-    const errors = [err.message || 'TypeScript compilation failed'];
+    const errorMessage = err instanceof Error ? err.message : 'TypeScript compilation failed';
+    const errors = [errorMessage];
     return { isValid: false, errors };
   }
 }

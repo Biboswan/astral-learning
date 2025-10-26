@@ -1,13 +1,7 @@
 import { createServerSupabaseClient } from '@/lib/supabase/server';
-import type { GeneratedLessonContent } from '@/lib/types/generatedLessonContent';
+import type { GeneratedLessonBlock, GeneratedLessonContent } from '@/lib/types/generatedLessonContent';
 import { notFound } from 'next/navigation';
 import InteractiveQuiz from '@/components/InteractiveQuiz';
-
-interface ViewLessonProps {
-  params: {
-    id: string;
-  };
-}
 
 function evaluateLessonCode(jsCode: string): GeneratedLessonContent | null{
   try {
@@ -28,7 +22,9 @@ function evaluateLessonCode(jsCode: string): GeneratedLessonContent | null{
   }
 }
 
-export default async function ViewLesson({ params }: ViewLessonProps) {
+export default async function ViewLesson({ params }: {
+  params: Promise<{ id: string }>
+}) {
   const supabase = await createServerSupabaseClient();
   const { id } = await params;
   const { data: lesson, error } = await supabase
@@ -79,7 +75,7 @@ export default async function ViewLesson({ params }: ViewLessonProps) {
             </div>
 
             {/* Lesson Blocks */}
-            {evaluatedLesson.blocks && evaluatedLesson.blocks.map((block: any, index: number) => (
+            {evaluatedLesson.blocks && evaluatedLesson.blocks.map((block: GeneratedLessonBlock, index: number) => (
               <div key={index} className="mb-6 p-6 border rounded-lg">
                 {block.kind === 'explanation' && (
                   <div>
