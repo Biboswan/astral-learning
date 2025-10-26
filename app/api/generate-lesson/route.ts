@@ -56,10 +56,10 @@ export async function POST(request: NextRequest) {
     - title: string
     - blocks: array of GeneratedLessonBlock objects
     4. GeneratedLessonBlock can be of any of the following kinds:
-    - "explanation": { heading?: string, body: string, svgDiagram?: string }
-    - "quiz": { description?: string, questions: [{ question: string, options: string[], answer: number, explanation?: string }] }
-    - "code": { language: "ts" | "js" | "python", code: string, output?: string }
-    - "image": { alt: string, url: string }
+    - "explanation": { kind: "explanation", heading?: string, body: string, svgDiagram?: string }
+    - "quiz": { kind: "quiz", description?: string, questions: [{ question: string, options: string[], answer: number, explanation?: string }] }
+    - "code": { kind: "code", language: "ts" | "js" | "python", code: string, output?: string }
+    - "image": { kind: "image", alt: string, url: string }
     5. Content Guidelines:
     - Generate 6-8 blocks total (not 4 of each kind)
     - Use explanation blocks for concepts and theory
