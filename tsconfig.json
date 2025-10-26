@@ -35,15 +35,6 @@
     "**/*.tsx",
     ".next/types/**/*.ts"
   ],
-  "overrides": [
-    {
-      "files": ["app/api/**/*.ts"],
-      "compilerOptions": {
-        "moduleResolution": "NodeNext",
-        "lib": ["ESNext"]
-      }
-    }
-  ],
   "exclude": [
     "node_modules",
     "supabase/functions"
