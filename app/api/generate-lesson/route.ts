@@ -32,7 +32,7 @@ const updateFailedLesson = async (lesson_id: string) => {
 
 const generateVisualsForLesson = (lesson_id: string, js_code: string, url: string) => {
     // Fire and forget - don't await this
-    fetch(`${url}/api/generate-visual`, {
+    fetch(`/api/generate-visual`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
