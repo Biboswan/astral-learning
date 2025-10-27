@@ -30,7 +30,7 @@ const updateFailedLesson = async (lesson_id: string) => {
   }
 }
 
-const generateVisualsForLesson = (lesson_id: string, js_code: string, url: string) => {
+const generateVisualsForLesson = (lesson_id: string, js_code: string) => {
     // Fire and forget - don't await this
     fetch(`/api/generate-visual`, {
       method: 'POST',
@@ -135,7 +135,7 @@ export async function POST(request: NextRequest) {
     console.log("Triggering visual generation for lesson:", lesson_id);
 
     // Fire visual generation as a background job
-    generateVisualsForLesson(lesson_id, generatedJsCode, request.nextUrl.origin);
+    generateVisualsForLesson(lesson_id, generatedJsCode);
 
     return NextResponse.json("Lesson content generated successfully", { status: 200 });
   } else {
