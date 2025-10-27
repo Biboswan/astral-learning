@@ -1,109 +1,241 @@
-<a href="https://demo-nextjs-with-supabase.vercel.app/">
-  <img alt="Next.js and Supabase Starter Kit - the fastest way to build apps with Next.js and Supabase" src="https://demo-nextjs-with-supabase.vercel.app/opengraph-image.png">
-  <h1 align="center">Next.js and Supabase Starter Kit</h1>
-</a>
+# Astral Digital Lessons
 
-<p align="center">
- The fastest way to build apps with Next.js and Supabase
-</p>
-
-<p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#demo"><strong>Demo</strong></a> ·
-  <a href="#deploy-to-vercel"><strong>Deploy to Vercel</strong></a> ·
-  <a href="#clone-and-run-locally"><strong>Clone and run locally</strong></a> ·
-  <a href="#feedback-and-issues"><strong>Feedback and issues</strong></a>
-  <a href="#more-supabase-examples"><strong>More Examples</strong></a>
-</p>
-<br/>
+A Next.js application that uses AI to generate interactive educational lessons with TypeScript validation and transpilation. Perfect for creating dynamic, type-safe educational content.
 
 ## Features
 
-- Works across the entire [Next.js](https://nextjs.org) stack
-  - App Router
-  - Pages Router
-  - Middleware
-  - Client
-  - Server
-  - It just works!
-- supabase-ssr. A package to configure Supabase Auth to use cookies
-- Password-based authentication block installed via the [Supabase UI Library](https://supabase.com/ui/docs/nextjs/password-based-auth)
-- Styling with [Tailwind CSS](https://tailwindcss.com)
-- Components with [shadcn/ui](https://ui.shadcn.com/)
-- Optional deployment with [Supabase Vercel Integration and Vercel deploy](#deploy-your-own)
-  - Environment variables automatically assigned to Vercel project
+- 🤖 **AI-Powered Lesson Generation**: Uses OpenAI GPT-4o-mini to generate engaging lesson content
+- 📝 **TypeScript Validation**: Validates and transpiles TypeScript lesson code to JavaScript using the TypeScript compiler API
+- 📚 **Multiple Content Types**: Supports explanation blocks, interactive quizzes, code examples, and images
+- 🎯 **Interactive Quizzes**: Built-in quiz component with scoring, explanations, and progress tracking
+- 🔄 **Real-time Updates**: Supabase real-time subscriptions for live lesson status updates
+- 💾 **Database Storage**: Stores TypeScript and JavaScript code in Supabase
+- 🎨 **Modern UI**: Built with Tailwind CSS and shadcn/ui components
+- ☁️ **Serverless Ready**: Optimized for Vercel deployment with proper file tracing
 
-## Demo
+## Tech Stack
 
-You can view a fully working demo at [demo-nextjs-with-supabase.vercel.app](https://demo-nextjs-with-supabase.vercel.app/).
+- **Framework**: Next.js 15 (App Router)
+- **Database**: Supabase
+- **AI**: OpenAI GPT-4o-mini via Vercel AI SDK
+- **Type Checking**: TypeScript Compiler API
+- **Styling**: Tailwind CSS
+- **UI Components**: shadcn/ui (Radix UI)
+- **Authentication**: Supabase Auth with SSR
 
-## Deploy to Vercel
+## Project Structure
 
-Vercel deployment will guide you through creating a Supabase account and project.
+```
+├── app/
+│   ├── api/
+│   │   ├── generate-lesson/    # AI lesson generation endpoint
+│   │   └── lessons/             # CRUD operations for lessons
+│   ├── lessons/
+│   │   └── [id]/                # Individual lesson viewer
+│   └── page.tsx                 # Home page with lesson generation
+├── components/
+│   ├── InteractiveQuiz.tsx      # Interactive quiz component
+│   └── LessonsTable.tsx         # Lessons listing table
+├── lib/
+│   ├── supabase/                # Supabase client configuration
+│   ├── types/                   # TypeScript types
+│   └── validateAndTranspile.ts  # TypeScript validation & transpilation
+├── supabase/
+│   └── migrations/              # Database migrations
+└── components/ui/               # shadcn/ui components
+```
 
-After installation of the Supabase integration, all relevant environment variables will be assigned to the project so the deployment is fully functioning.
+## How It Works
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&project-name=nextjs-with-supabase&repository-name=nextjs-with-supabase&demo-title=nextjs-with-supabase&demo-description=This+starter+configures+Supabase+Auth+to+use+cookies%2C+making+the+user%27s+session+available+throughout+the+entire+Next.js+app+-+Client+Components%2C+Server+Components%2C+Route+Handlers%2C+Server+Actions+and+Middleware.&demo-url=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2F&external-id=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&demo-image=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2Fopengraph-image.png)
+1. **Lesson Creation**: Users enter a lesson outline on the homepage
+2. **Database Insert**: A lesson record is created with "generating" status
+3. **AI Generation**: OpenAI generates TypeScript code following the `GeneratedLessonContent` interface
+4. **Validation**: The TypeScript code is validated and transpiled to JavaScript
+5. **Retry Logic**: If validation fails, the AI retries up to 5 times with feedback
+6. **Storage**: Both TypeScript and JavaScript code are stored in Supabase
+7. **Display**: Lessons are rendered with interactive components
 
-The above will also clone the Starter kit to your GitHub, you can clone that locally and develop locally.
+## Content Types
 
-If you wish to just develop locally and not deploy to Vercel, [follow the steps below](#clone-and-run-locally).
+Lessons can contain the following block types:
 
-## Clone and run locally
+- **ExplanationBlock**: Text content with optional heading and SVG diagrams
+- **QuizBlock**: Interactive quizzes with multiple choice questions
+- **CodeBlock**: Code examples in TypeScript, JavaScript, or Python
+- **ImageBlock**: Visual aids with alt text and URLs
 
-1. You'll first need a Supabase project which can be made [via the Supabase dashboard](https://database.new)
+## Getting Started
 
-2. Create a Next.js app using the Supabase Starter template npx command
+### Prerequisites
+
+- Node.js 20+
+- A Supabase account and project
+- An OpenAI API key
+
+### Installation
+
+1. Clone the repository:
 
    ```bash
-   npx create-next-app --example with-supabase with-supabase-app
+git clone <your-repo-url>
+cd astral-digital-lessons
    ```
+
+2. Install dependencies:
 
    ```bash
-   yarn create next-app --example with-supabase with-supabase-app
-   ```
+npm install
+```
+
+3. Set up environment variables:
+
+Create a `.env.local` file:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+OPENAI_API_KEY=your_openai_api_key
+```
+
+4. Set up the database:
+
+Run the migration in your Supabase SQL editor:
 
    ```bash
-   pnpm create next-app --example with-supabase with-supabase-app
-   ```
+# See supabase/migrations/001_create_lessons_table.sql
+# Also run supabase/migrations/002_add_js_code_column.sql
+```
 
-3. Use `cd` to change into the app's directory
-
-   ```bash
-   cd with-supabase-app
-   ```
-
-4. Rename `.env.example` to `.env.local` and update the following:
-
-  ```env
-  NEXT_PUBLIC_SUPABASE_URL=[INSERT SUPABASE PROJECT URL]
-  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=[INSERT SUPABASE PROJECT API PUBLISHABLE OR ANON KEY]
-  ```
-  > [!NOTE]
-  > This example uses `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, which refers to Supabase's new **publishable** key format.
-  > Both legacy **anon** keys and new **publishable** keys can be used with this variable name during the transition period. Supabase's dashboard may show `NEXT_PUBLIC_SUPABASE_ANON_KEY`; its value can be used in this example.
-  > See the [full announcement](https://github.com/orgs/supabase/discussions/29260) for more information.
-
-  Both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` can be found in [your Supabase project's API settings](https://supabase.com/dashboard/project/_?showConnect=true)
-
-5. You can now run the Next.js local development server:
+5. Run the development server:
 
    ```bash
    npm run dev
    ```
 
-   The starter kit should now be running on [localhost:3000](http://localhost:3000/).
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-6. This template comes with the default shadcn/ui style initialized. If you instead want other ui.shadcn styles, delete `components.json` and [re-install shadcn/ui](https://ui.shadcn.com/docs/installation/next)
+## Configuration
 
-> Check out [the docs for Local Development](https://supabase.com/docs/guides/getting-started/local-development) to also run Supabase locally.
+### TypeScript Compiler Options
 
-## Feedback and issues
+The app uses the TypeScript Compiler API for validation. The configuration is in `lib/validateAndTranspile.ts` and includes:
 
-Please file feedback and issues over on the [Supabase GitHub org](https://github.com/supabase/supabase/issues/new/choose).
+- ES2017 target
+- Strict type checking
+- ESNext modules
+- Bundler module resolution
 
-## More Supabase examples
+### Vercel Deployment
 
-- [Next.js Subscription Payments Starter](https://github.com/vercel/nextjs-subscription-payments)
-- [Cookie-based Auth and the Next.js 13 App Router (free course)](https://youtube.com/playlist?list=PL5S4mPUpp4OtMhpnp93EFSo42iQ40XjbF)
-- [Supabase Auth and the Next.js App Router](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs)
+The `next.config.ts` includes output file tracing for TypeScript library files to ensure proper serverless function operation on Vercel:
+
+```typescript
+outputFileTracingIncludes: {
+  '/api/generate-lesson': [
+    'node_modules/typescript/lib/lib.d.ts',
+    'node_modules/typescript/lib/lib.es5.d.ts',
+    'node_modules/typescript/lib/lib.esnext.d.ts',
+  ],
+}
+```
+
+## Database Schema
+
+```sql
+CREATE TABLE lessons (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  title TEXT NOT NULL,
+  outline TEXT,
+  status TEXT DEFAULT 'generating' CHECK (status IN ('generating', 'generated', 'failed')),
+  ts_code TEXT,
+  js_code TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
+## API Endpoints
+
+### POST `/api/lessons`
+
+Creates a new lesson with "generating" status and triggers async generation.
+
+**Request:**
+```json
+{
+  "outline": "Introduction to JavaScript functions"
+}
+```
+
+**Response:**
+```json
+{
+  "id": "uuid",
+  "title": "Introduction...",
+  "outline": "...",
+  "status": "generating",
+  "created_at": "..."
+}
+```
+
+### POST `/api/generate-lesson`
+
+Generates lesson content using AI (called asynchronously).
+
+**Request:**
+```json
+{
+  "lesson_id": "uuid",
+  "outline": "Lesson outline"
+}
+```
+
+Uses retry logic to ensure valid TypeScript code generation.
+
+## Development
+
+### Type Safety
+
+The app enforces strict TypeScript validation on generated content:
+
+- Uses the `GeneratedLessonContent` interface for type checking
+- Validates TypeScript syntax before transpilation
+- Transpiles to ES2017 compatible JavaScript
+
+### Real-time Updates
+
+Uses Supabase real-time subscriptions to update lesson status without page refresh:
+
+```typescript
+supabase
+  .channel('public:lessons')
+  .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'lessons' }, callback)
+  .subscribe();
+```
+
+## Scripts
+
+- `npm run dev` - Start development server with Turbopack
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Ensure TypeScript validation passes
+5. Submit a pull request
+
+## License
+
+This project is private and proprietary.
+
+## Acknowledgments
+
+- Built with [Next.js](https://nextjs.org/)
+- Database powered by [Supabase](https://supabase.com/)
+- AI integration via [Vercel AI SDK](https://sdk.vercel.ai/)
+- UI components from [shadcn/ui](https://ui.shadcn.com/)

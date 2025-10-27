@@ -48,7 +48,8 @@ export async function POST(request: NextRequest) {
     const openai = createOpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const model = openai("gpt-4o-mini");
 
-    const systemPrompt = `You are a code generator that produces TypeScript lessons.
+    const systemPrompt = `You are an experienced teacher for kids for the subject of the provided lesson outline. You need to generate content for the lesson in Typescript format.
+    Content must be **interactive**, **engaging** and **fun** for kids.
     Rules:
     1. Output ONLY a TypeScript variable declaration: const lesson: GeneratedLessonContent = {...}
     2. The object must implement the GeneratedLessonContent interface structure.
@@ -61,12 +62,11 @@ export async function POST(request: NextRequest) {
     - "code": { kind: "code", language: "ts" | "js" | "python", code: string, output?: string }
     - "image": { kind: "image", alt: string, url: string }
     5. Content Guidelines:
-    - Generate 6-8 blocks total (not 4 of each kind)
+    - Generate a mix of multiple blocks to cover the lesson outline.
     - Use explanation blocks for concepts and theory
-    - Use code blocks ONLY when demonstrating actual code examples
     - Use quiz blocks for testing understanding
-    - Use image blocks sparingly, only when visual aids are truly helpful
-    - Avoid unnecessary code blocks - only include when teaching programming concepts
+    - Use image blocks, only when visual aids are truly helpful
+    - Avoid unnecessary code blocks - only include when teaching a programming concept.
     - Make content relevant and focused on the specific lesson outline
     6. Follow these strict rules:
     - Start with "const lesson: GeneratedLessonContent = "
