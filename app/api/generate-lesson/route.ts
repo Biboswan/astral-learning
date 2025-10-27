@@ -31,18 +31,17 @@ const updateFailedLesson = async (lesson_id: string) => {
 }
 
 const generateVisualsForLesson = (lesson_id: string, js_code: string, url: string) => {
-  try {
+    // Fire and forget - don't await this
     fetch(`${url}/api/generate-visual`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ lesson_id: lesson_id, js_code: js_code }),
+    }).catch(error => {
+      console.error("Error triggering visual generation:", error);
     });
-  } catch (error) {
-    console.error("Error generating visuals for lesson:", error);
-  }
-}
+};
 
 export async function POST(request: NextRequest) {
   try {
@@ -133,8 +132,9 @@ export async function POST(request: NextRequest) {
 
   if (generatedTsCode && generatedJsCode) {
     await updateGeneratedLesson(lesson_id, generatedTsCode, generatedJsCode);
-    console.log("Generating visuals for lesson:", lesson_id);
+    console.log("Triggering visual generation for lesson:", lesson_id);
 
+    // Fire visual generation as a background job
     generateVisualsForLesson(lesson_id, generatedJsCode, request.nextUrl.origin);
 
     return NextResponse.json("Lesson content generated successfully", { status: 200 });
