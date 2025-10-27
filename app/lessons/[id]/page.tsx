@@ -2,6 +2,7 @@ import { createServerSupabaseClient } from '@/lib/supabase/server';
 import type { GeneratedLessonBlock, GeneratedLessonContent } from '@/lib/types/generatedLessonContent';
 import { notFound } from 'next/navigation';
 import InteractiveQuiz from '@/components/InteractiveQuiz';
+import { Visual } from '@/lib/types/lesson';
 
 function evaluateLessonCode(jsCode: string): GeneratedLessonContent | null{
   try {
@@ -20,6 +21,10 @@ function evaluateLessonCode(jsCode: string): GeneratedLessonContent | null{
     console.error('Error evaluating lesson code:', evalError);
     return null;
   }
+}
+
+const VisualBlock = ({visual, alt}: {visual: Visual, alt: string}) => {
+  return <img src={`data:${visual.type || 'image/png'};base64, ${visual.imageData}`} alt={alt} className="max-w-full h-auto rounded-lg" />;
 }
 
 export default async function ViewLesson({ params }: {
@@ -43,6 +48,13 @@ export default async function ViewLesson({ params }: {
     evaluatedLesson = evaluateLessonCode(lesson.js_code);
     console.log('evaluatedLesson', evaluatedLesson);
   }
+
+  const visuals = lesson.visuals;
+
+  const mapBlockIdToVisual = visuals?.reduce((acc: { [key: number]: Visual }, visual: Visual) => {
+    acc[visual.block_id] = visual;
+    return acc;
+  }, {});
 
   return (
     <main className="container mx-auto px-4 py-8">
@@ -83,11 +95,13 @@ export default async function ViewLesson({ params }: {
                       <h4 className="text-lg font-semibold mb-3">{block.heading}</h4>
                     )}
                     <p className="text-gray-700 mb-3">{block.body}</p>
-                    {block.svgDiagram && (
-                      <div 
-                        className="mt-4"
-                        dangerouslySetInnerHTML={{ __html: block.svgDiagram }}
-                      />
+                    {block.svgGenerationPrompt && (
+                      <div className="mt-4 flex justify-center">
+                        <VisualBlock 
+                         visual={mapBlockIdToVisual[index]}
+                         alt={block.heading || "Diagram"} 
+                        />
+                      </div>
                     )}
                   </div>
                 )}
@@ -119,10 +133,9 @@ export default async function ViewLesson({ params }: {
                 {block.kind === 'image' && (
                   <div>
                     <h4 className="text-lg font-semibold mb-3">{block.alt}</h4>
-                    <img 
-                      src={block.url} 
+                    <VisualBlock
+                      visual={mapBlockIdToVisual[index]}
                       alt={block.alt}
-                      className="max-w-full h-auto rounded-lg"
                     />
                   </div>
                 )}

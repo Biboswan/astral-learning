@@ -42,7 +42,7 @@ interface ExplanationBlock {
   kind: "explanation";
   heading?: string;
   body: string;
-  svgDiagram?: string;
+  svgGenerationPrompt?: string;
 }
 
 interface QuizBlock {
@@ -66,7 +66,7 @@ interface CodeBlock {
 interface ImageBlock {
   kind: "image";
   alt: string;
-  url: string;
+  imageGenerationPrompt?: string;
 }
 `;
 

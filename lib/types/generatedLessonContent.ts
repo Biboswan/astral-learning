@@ -13,7 +13,7 @@ export interface ExplanationBlock {
     kind: "explanation";
     heading?: string;
     body: string;
-    svgDiagram?: string;
+    svgGenerationPrompt?: string;
 }
 
 export interface QuizBlock {
@@ -37,5 +37,5 @@ export interface CodeBlock {
 export interface ImageBlock {
     kind: "image";
     alt: string;
-    url: string;
+    imageGenerationPrompt?: string;
 }

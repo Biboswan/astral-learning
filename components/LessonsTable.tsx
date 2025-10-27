@@ -47,7 +47,7 @@ export default function LessonsTable({ lessons }: { lessons: Lesson[] }) {
                     )}
                   </TableCell>
                   <TableCell>
-                    {lesson.status === "generating" && (
+                    {(lesson.status === "generating" || lesson.status === "generated_content") && (
                       <Badge variant="generating" className="animate-pulse">
                         Generating...
                       </Badge>

@@ -11,7 +11,7 @@ const updateGeneratedLesson = async (lesson_id: string, ts_code: string, js_code
     const supabase = await createServerSupabaseClient();
     await supabase
       .from("lessons")
-      .update({ status: "generated", ts_code, js_code })
+      .update({ status: "generated_content", ts_code, js_code })
       .eq("id", lesson_id);
   } catch (error) {
     console.error("Error updating generated lesson:", error);
@@ -27,6 +27,20 @@ const updateFailedLesson = async (lesson_id: string) => {
       .eq("id", lesson_id);
   } catch (error) {
     console.error("Error updating failed lesson:", error);
+  }
+}
+
+const generateVisualsForLesson = async (lesson_id: string, js_code: string, url: string) => {
+  try {
+    fetch(`${url}/api/generate-visual`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ lesson_id: lesson_id, js_code: js_code }),
+    });
+  } catch (error) {
+    console.error("Error generating visuals for lesson:", error);
   }
 }
 
@@ -49,7 +63,7 @@ export async function POST(request: NextRequest) {
     const model = openai("gpt-4o-mini");
 
     const systemPrompt = `You are an experienced teacher for kids for the subject of the provided lesson outline. You need to generate content for the lesson in Typescript format.
-    Content must be **interactive**, **engaging** and **fun** for kids.
+    Content must be **visual**, **interactive**, **engaging** and **fun** for kids. 
     Rules:
     1. Output ONLY a TypeScript variable declaration: const lesson: GeneratedLessonContent = {...}
     2. The object must implement the GeneratedLessonContent interface structure.
@@ -57,15 +71,15 @@ export async function POST(request: NextRequest) {
     - title: string
     - blocks: array of GeneratedLessonBlock objects
     4. GeneratedLessonBlock can be of any of the following kinds:
-    - "explanation": { kind: "explanation", heading?: string, body: string, svgDiagram?: string }
+    - "explanation": { kind: "explanation", heading?: string, body: string, svgGenerationPrompt?: string, base64Image?: string }
     - "quiz": { kind: "quiz", description?: string, questions: [{ question: string, options: string[], answer: number, explanation?: string }] }
     - "code": { kind: "code", language: "ts" | "js" | "python", code: string, output?: string }
-    - "image": { kind: "image", alt: string, url: string }
+    - "image": { kind: "image", imageGenerationPrompt?: string, alt: string }
     5. Content Guidelines:
     - Generate a mix of multiple blocks to cover the lesson outline.
     - Use explanation blocks for concepts and theory
     - Use quiz blocks for testing understanding
-    - Use image blocks, only when visual aids are truly helpful
+    - Use image blocks, only when visual aids are truly helpful.
     - Avoid unnecessary code blocks - only include when teaching a programming concept.
     - Make content relevant and focused on the specific lesson outline
     6. Follow these strict rules:
@@ -119,7 +133,9 @@ export async function POST(request: NextRequest) {
 
   if (generatedTsCode && generatedJsCode) {
     await updateGeneratedLesson(lesson_id, generatedTsCode, generatedJsCode);
-    return NextResponse.json("Lesson generated successfully", { status: 200 });
+    generateVisualsForLesson(lesson_id, generatedJsCode, request.nextUrl.origin);
+
+    return NextResponse.json("Lesson content generated successfully", { status: 200 });
   } else {
     await updateFailedLesson(lesson_id);
     return NextResponse.json("Lesson generation failed", { status: 500 });
