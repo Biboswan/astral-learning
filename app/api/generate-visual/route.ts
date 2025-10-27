@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import * as vm from 'node:vm';
+//import * as vm from 'node:vm';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { createOpenAI } from '@ai-sdk/openai';
 import { experimental_generateImage as generateImage } from 'ai';
@@ -56,8 +56,9 @@ export async function POST(request: NextRequest) {
     const openai = createOpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const model = openai.image('dall-e-3');
 
-    const context = vm.createContext({});
-    const lesson = vm.runInContext(`(function() { ${js_code} return typeof lesson !== 'undefined' ? lesson : null; })()`, context);
+    //const context = vm.createContext({});
+    //const lesson = vm.runInContext(`(function() { ${js_code} return typeof lesson !== 'undefined' ? lesson : null; })()`, context);
+    const lesson = eval(`(function() { ${js_code} return typeof lesson !== 'undefined' ? lesson : null; })()`);
     if (!lesson) {
         console.error("Lesson not found");
         return NextResponse.json({ error: 'Lesson not found' }, { status: 400 });
