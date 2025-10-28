@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse, after } from 'next/server';
 import { wrapAISDK } from "langsmith/experimental/vercel";
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { createOpenAI } from '@ai-sdk/openai';
@@ -30,11 +30,10 @@ const updateFailedLesson = async (lesson_id: string) => {
   }
 }
 
-const generateVisualsForLesson = (lesson_id: string, js_code: string) => {
+const generateVisualsForLesson = async (lesson_id: string, js_code: string, url: string) => {
     // Fire and forget - don't await this
-    const url = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}/api/generate-visual` : 'http://localhost:3000/api/generate-visual';
     console.log("Visual generation URL:", url);
-    fetch(url, {
+    await fetch(`${url}/api/generate-visual`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -137,7 +136,9 @@ export async function POST(request: NextRequest) {
     console.log("Triggering visual generation for lesson:", lesson_id);
 
     // Fire visual generation as a background job
-    generateVisualsForLesson(lesson_id, generatedJsCode);
+    after(() => {
+      generateVisualsForLesson(lesson_id, generatedJsCode,request.nextUrl.origin);
+    });
 
     return NextResponse.json("Lesson content generated successfully", { status: 200 });
   } else {
