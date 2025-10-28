@@ -136,8 +136,8 @@ export async function POST(request: NextRequest) {
     console.log("Triggering visual generation for lesson:", lesson_id);
 
     // Fire visual generation as a background job
-    after(() => {
-      generateVisualsForLesson(lesson_id, generatedJsCode,request.nextUrl.origin);
+    after(async() => {
+      await generateVisualsForLesson(lesson_id, generatedJsCode,request.nextUrl.origin);
     });
 
     return NextResponse.json("Lesson content generated successfully", { status: 200 });
