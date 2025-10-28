@@ -33,6 +33,7 @@ const updateFailedLesson = async (lesson_id: string) => {
 const generateVisualsForLesson = (lesson_id: string, js_code: string) => {
     // Fire and forget - don't await this
     const url = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}/api/generate-visual` : 'http://localhost:3000/api/generate-visual';
+    console.log("Visual generation URL:", url);
     fetch(url, {
       method: 'POST',
       headers: {
