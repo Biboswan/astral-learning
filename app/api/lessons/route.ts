@@ -29,11 +29,10 @@ export async function POST(request: NextRequest) {
     // Call the generate lesson API route
     if (data) {
       try {
-        fetch(`${request.nextUrl.origin}/api/generate-lesson`, {
+        const url = `${request.nextUrl.origin}/api/generate-lesson`;
+        console.log('url:', url);
+        await fetch(url, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
           body: JSON.stringify({ lesson_id: data.id, outline: outline }),
         });
         console.log('Lesson generation triggered for:', data.id);
