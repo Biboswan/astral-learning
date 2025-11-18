@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { after, NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 
 export async function POST(request: NextRequest) {
@@ -31,10 +31,23 @@ export async function POST(request: NextRequest) {
       try {
         const url = `${request.nextUrl.origin}/api/generate-lesson`;
         console.log('url:', url);
-        await fetch(url, {
-          method: 'POST',
-          body: JSON.stringify({ lesson_id: data.id, outline: outline }),
+
+        after(async () => {
+          try {
+            const response = await fetch(url, {
+              method: 'POST',
+              body: JSON.stringify({ lesson_id: data.id, outline: outline }),
+            });
+            if (response.ok) {
+              console.log('Lesson content generated successfully for lesson:', data.id);
+            } else {
+              console.error('Error generating lesson content:', response.statusText);
+            }
+          } catch (error) {
+            console.error('Error calling generate lesson function:', error);
+          }
         });
+  
         console.log('Lesson generation triggered for:', data.id);
       } catch (functionError) {
         console.error('Error calling generate lesson function:', functionError);
